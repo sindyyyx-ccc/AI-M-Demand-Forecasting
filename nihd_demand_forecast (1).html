@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIHD — AI-driven Smart Manufacturing Ecosystem · Demand Forecasting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #F5F4F0;
+  --surface: #FFFFFF;
+  --surface2: #EEECEA;
+  --border: #DDDBD6;
+  --border2: #E8E6E1;
+  --text: #1A1916;
+  --text2: #6B6860;
+  --text3: #9B9890;
+  --accent: #1B4F8A;
+  --accent2: #0F6E56;
+  --danger: #993C1D;
+  --warn: #854F0B;
+  --info: #185FA5;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── TOP NAV ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 12px;
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.topbar-icon {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 15px;
+}
+.topbar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.topbar-sub {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 400;
+}
+.topbar-right {
+  display: flex; align-items: center; gap: 8px;
+}
+.topbar-badge {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: #E6F1FB;
+  color: var(--info);
+  font-weight: 500;
+  font-family: var(--mono);
+}
+
+/* ── LAYOUT ── */
+.page { max-width: 1180px; margin: 0 auto; padding: 2rem; }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ── CONTROLS BAR ── */
+.controls-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.controls-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-right: 4px;
+}
+select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 12px;
+  font-size: 13px;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s;
+}
+select:hover, select:focus { border-color: var(--accent); }
+
+/* ── FESTIVAL STRIP ── */
+.fest-strip-wrap {
+  margin-bottom: 1.25rem;
+}
+.fest-strip-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 7px;
+}
+.fest-strip {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.fest-tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+/* ── METRICS ── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+@media(max-width:700px){ .metrics-grid{grid-template-columns:repeat(2,1fr);} }
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.metric-label { font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+.metric-value { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+.metric-value.up { color: var(--accent2); }
+.metric-value.dn { color: var(--danger); }
+.metric-delta { font-size: 12px; margin-top: 4px; color: var(--text2); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 14px;
+}
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+@media(max-width:700px){ .two-col{grid-template-columns:1fr;} }
+
+/* ── SIGNAL BARS ── */
+.signal-item { margin-bottom: 12px; }
+.signal-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.signal-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.signal-note { font-size: 11px; color: var(--text2); }
+.signal-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.signal-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+
+/* ── SLIDERS ── */
+.slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
+.slider-label { font-size: 12px; color: var(--text2); min-width: 190px; }
+.slider-val { font-size: 12px; font-weight: 600; min-width: 32px; text-align: right; color: var(--text); font-family: var(--mono); }
+input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface2);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* ── CHART ── */
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  margin-bottom: 10px;
+}
+.chart-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 8px;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+
+/* ── CONTRIB BARS ── */
+.contrib-item { margin-bottom: 8px; }
+.contrib-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 3px; }
+.contrib-track { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.contrib-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+
+/* ── QUICK ACTIONS ── */
+.actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+.btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  color: var(--text);
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: #153f70; color: #fff; border-color: #153f70; }
+
+/* ── DIVIDER ── */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0 1.5rem;
+}
+
+/* ── NOTICE ── */
+.notice-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-md);
+}
+.notice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border2);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.notice-ref { font-size: 11px; color: var(--text2); margin-bottom: 3px; font-family: var(--mono); }
+.notice-title { font-size: 17px; font-weight: 600; color: var(--text); }
+.notice-sub { font-size: 12px; color: var(--text2); margin-top: 3px; font-family: var(--mono); }
+.notice-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.badge-urgent { background: #FAECE7; color: var(--danger); }
+.badge-standard { background: #FAEEDA; color: var(--warn); }
+.badge-routine { background: #E1F5EE; color: var(--accent2); }
+
+.notice-section { margin-bottom: 1.25rem; }
+.notice-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border2);
+}
+.notice-body { font-size: 13px; color: var(--text); line-height: 1.75; }
+
+.justif-row { display: flex; gap: 11px; align-items: flex-start; margin-bottom: 10px; }
+.justif-icon { font-size: 17px; color: var(--info); flex-shrink: 0; margin-top: 1px; }
+.justif-text { font-size: 13px; color: var(--text); line-height: 1.65; }
+.justif-source { font-size: 11px; color: var(--text2); margin-top: 2px; font-family: var(--mono); }
+
+.proc-table { width: 100%; font-size: 12px; border-collapse: collapse; table-layout: fixed; }
+.proc-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text2);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.proc-table td {
+  padding: 8px 10px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border2);
+  vertical-align: top;
+  word-wrap: break-word;
+}
+.proc-table tr:last-child td { border-bottom: none; }
+.proc-table tr:hover td { background: #FAFAF8; }
+.proc-table td.note-col { color: var(--text2); font-size: 11px; }
+
+.notice-footer {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sig-block { font-size: 11px; color: var(--text2); line-height: 2; font-family: var(--mono); }
+
+/* ── RISK FLAGS ── */
+.risk-row { display: flex; gap: 11px; align-items: flex-start; margin-bottom: 8px; }
+.risk-text { font-size: 13px; line-height: 1.55; }
+
+/* ── NOTICE SECTION HEADER ── */
+.notice-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.notice-section-header-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.notice-section-header-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+/* ── FOOTER ── */
+.page-footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text3);
+  padding: 2rem 0 1rem;
+  border-top: 1px solid var(--border2);
+  margin-top: 2rem;
+  font-family: var(--mono);
+}
+
+/* ── PRINT ── */
+@media print {
+  .topbar, .controls-bar, .actions-row, .btn { display: none !important; }
+  .page { padding: 0; }
+  .card, .notice-box { box-shadow: none; border: 1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-icon"><i class="ti ti-activity-heartbeat"></i></div>
+    <div>
+      <div class="topbar-title">AI-driven Smart Manufacturing Ecosystem — Demand Forecasting</div>
+      <div class="topbar-sub">Powered by National Integrated Health Data Hub</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-badge">NIHD v2.0</span>
+    <span class="topbar-badge">CodeBlue 2026</span>
+    <button class="btn" onclick="window.print()"><i class="ti ti-printer"></i> Print / Save PDF</button>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- CONTROLS -->
+  <div class="controls-bar">
+    <span class="controls-label">Configure</span>
+    <select id="medicine" onchange="compute()">
+      <option value="metformin">Metformin (T2D)</option>
+      <option value="insulin">Insulin (T2D)</option>
+      <option value="glipizide">Glipizide (T2D)</option>
+      <option value="sglt2">SGLT2 inhibitors</option>
+    </select>
+    <select id="horizon" onchange="compute()">
+      <option value="3">3-month outlook</option>
+      <option value="6">6-month outlook</option>
+      <option value="12">12-month outlook</option>
+    </select>
+    <select id="yr" onchange="compute()">
+      <option value="2026">2026</option>
+      <option value="2027">2027</option>
+    </select>
+  </div>
+
+  <!-- FESTIVAL STRIP -->
+  <div class="fest-strip-wrap">
+    <div class="fest-strip-label">Malaysian festivals &amp; health calendar</div>
+    <div class="fest-strip" id="fest-strip"></div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics-grid" id="metrics-row"></div>
+
+  <!-- MAIN GRID -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Data source signals</div>
+      <div id="signals"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Demand driver weights</div>
+      <div class="slider-row"><span class="slider-label">EHR diagnosis rate growth</span><input type="range" min="0" max="100" value="85" step="1" id="w_ehr" oninput="sync(this);compute()"><span class="slider-val" id="v_w_ehr">85</span></div>
+      <div class="slider-row"><span class="slider-label">MySejahtera screening load</span><input type="range" min="0" max="100" value="72" step="1" id="w_app" oninput="sync(this);compute()"><span class="slider-val" id="v_w_app">72</span></div>
+      <div class="slider-row"><span class="slider-label">MyUbat refill frequency</span><input type="range" min="0" max="100" value="90" step="1" id="w_ubat" oninput="sync(this);compute()"><span class="slider-val" id="v_w_ubat">90</span></div>
+      <div class="slider-row"><span class="slider-label">CGM glucose signal intensity</span><input type="range" min="0" max="100" value="60" step="1" id="w_cgm" oninput="sync(this);compute()"><span class="slider-val" id="v_w_cgm">60</span></div>
+      <div class="slider-row"><span class="slider-label">Seasonal pattern (festivals/flu)</span><input type="range" min="0" max="100" value="55" step="1" id="w_season" oninput="sync(this);compute()"><span class="slider-val" id="v_w_season">55</span></div>
+      <div class="slider-row" style="margin-bottom:0"><span class="slider-label">Supply lead time pressure</span><input type="range" min="0" max="100" value="40" step="1" id="w_supply" oninput="sync(this);compute()"><span class="slider-val" id="v_w_supply">40</span></div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Monthly demand forecast — units (thousands)</div>
+    <div class="chart-wrap"><canvas id="forecastChart"></canvas></div>
+    <div class="chart-legend" id="chart-legend"></div>
+  </div>
+
+  <!-- CONTRIBUTION -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Demand contribution by data source</div>
+    <div id="contribution-bars"></div>
+  </div>
+
+  <!-- DIVIDER -->
+  <hr class="section-divider">
+
+  <!-- PROCUREMENT NOTICE -->
+  <div class="notice-section-header">
+    <div>
+      <div class="notice-section-header-title"><i class="ti ti-file-description" style="vertical-align:-2px;margin-right:6px"></i>Procurement planning notice</div>
+      <div class="notice-section-header-sub">Auto-generated from forecast · Updates with every slider change</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="compute()"><i class="ti ti-refresh"></i> Regenerate</button>
+      <button class="btn btn-primary" onclick="window.print()"><i class="ti ti-download"></i> Save as PDF</button>
+    </div>
+  </div>
+
+  <div id="notice-area"></div>
+
+  <div class="page-footer">
+    NIHD AI Forecasting Engine v2.0 &nbsp;·&nbsp; MOH Malaysia — Pharmaceutical Services Division &nbsp;·&nbsp; Classification: Official · Procurement planning use only
+  </div>
+
+</main>
+
+<script>
+let chart=null, _st={};
+
+const MED={
+  metformin:{base:420,growth_yr:0.07,cgm_sens:0.4,label:'Metformin 500mg',category:'Biguanide',atc:'A10BA02'},
+  insulin:  {base:180,growth_yr:0.09,cgm_sens:0.8,label:'Insulin (mixed)',category:'Insulin',atc:'A10AD01'},
+  glipizide:{base:95, growth_yr:0.05,cgm_sens:0.6,label:'Glipizide 5mg',category:'Sulfonylurea',atc:'A10BB07'},
+  sglt2:    {base:60, growth_yr:0.18,cgm_sens:0.5,label:'SGLT2 inhibitors',category:'Gliflozin',atc:'A10BK'},
+};
+
+const FESTS={
+  2026:[
+    {name:'Chinese New Year',month:0,date:'29 Jan',mult:1.14,bg:'#FAECE7',tc:'#712B13'},
+    {name:'Thaipusam',month:1,date:'3 Feb',mult:1.03,bg:'#FAEEDA',tc:'#633806'},
+    {name:'Hari Raya Aidilfitri',month:2,date:'31 Mar',mult:1.18,bg:'#E1F5EE',tc:'#085041'},
+    {name:'Wesak Day',month:4,date:'12 May',mult:1.04,bg:'#EEEDFE',tc:'#3C3489'},
+    {name:'Hari Raya Aidiladha',month:5,date:'7 Jun',mult:1.10,bg:'#E1F5EE',tc:'#085041'},
+    {name:'Merdeka Day',month:7,date:'31 Aug',mult:1.02,bg:'#E6F1FB',tc:'#0C447C'},
+    {name:'Malaysia Day',month:8,date:'16 Sep',mult:1.02,bg:'#E6F1FB',tc:'#0C447C'},
+    {name:'Deepavali',month:9,date:'20 Oct',mult:1.08,bg:'#FAEEDA',tc:'#633806'},
+    {name:'NE Monsoon / flu season',month:10,date:'Nov–Dec',mult:1.12,bg:'#FCEBEB',tc:'#791F1F'},
+    {name:'Christmas / year-end',month:11,date:'25 Dec',mult:1.06,bg:'#EEEDFE',tc:'#3C3489'},
+  ],
+  2027:[
+    {name:'Chinese New Year',month:0,date:'17 Jan',mult:1.14,bg:'#FAECE7',tc:'#712B13'},
+    {name:'Hari Raya Aidilfitri',month:2,date:'20 Mar',mult:1.18,bg:'#E1F5EE',tc:'#085041'},
+    {name:'Wesak Day',month:4,date:'1 May',mult:1.04,bg:'#EEEDFE',tc:'#3C3489'},
+    {name:'Hari Raya Aidiladha',month:4,date:'27 May',mult:1.10,bg:'#E1F5EE',tc:'#085041'},
+    {name:'Merdeka Day',month:7,date:'31 Aug',mult:1.02,bg:'#E6F1FB',tc:'#0C447C'},
+    {name:'Malaysia Day',month:8,date:'16 Sep',mult:1.02,bg:'#E6F1FB',tc:'#0C447C'},
+    {name:'Deepavali',month:9,date:'9 Oct',mult:1.08,bg:'#FAEEDA',tc:'#633806'},
+    {name:'NE Monsoon / flu season',month:10,date:'Nov–Dec',mult:1.12,bg:'#FCEBEB',tc:'#791F1F'},
+    {name:'Christmas / year-end',month:11,date:'25 Dec',mult:1.06,bg:'#EEEDFE',tc:'#3C3489'},
+  ]
+};
+
+const ML=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const NOW_M=4;
+
+function sync(el){document.getElementById('v_'+el.id).textContent=el.value;}
+function getFests(){return FESTS[+document.getElementById('yr').value]||FESTS[2026];}
+function festMult(mi){let m=1;getFests().forEach(f=>{if(f.month===mi)m=Math.max(m,f.mult);});return m;}
+function festName(mi){return getFests().filter(f=>f.month===mi).map(f=>f.name).join(' & ')||null;}
+
+function getW(){
+  return{
+    ehr:   +document.getElementById('w_ehr').value/100,
+    app:   +document.getElementById('w_app').value/100,
+    ubat:  +document.getElementById('w_ubat').value/100,
+    cgm:   +document.getElementById('w_cgm').value/100,
+    season:+document.getElementById('w_season').value/100,
+    supply:+document.getElementById('w_supply').value/100,
+  };
+}
+
+function renderFestStrip(){
+  const yr=document.getElementById('yr').value;
+  document.getElementById('fest-strip').innerHTML=
+    getFests().map(f=>`<span class="fest-tag" style="background:${f.bg};color:${f.tc}">${f.name} · ${f.date}</span>`).join('');
+}
+
+function calcVal(base,i,mg,w){
+  const mi=((NOW_M+i-1+12)%12);
+  const b=base*Math.pow(1+mg,i);
+  const sAdj=1+(festMult(mi)-1)*w.season;
+  const cgmF=1+0.4*w.cgm*0.05;
+  const supF=1+w.supply*0.03;
+  return b*sAdj*cgmF*supF;
+}
+
+function compute(){
+  renderFestStrip();
+  const medKey=document.getElementById('medicine').value;
+  const med=MED[medKey];
+  const horizon=+document.getElementById('horizon').value;
+  const w=getW();
+  const tw=(w.ehr+w.app+w.ubat+w.cgm+w.season+w.supply)/6;
+  const mg=(med.growth_yr/12)*(0.4+0.6*tw);
+
+  const HIST=6;
+  const labels=[],histData=[],forecastData=[],allValues=[];
+
+  for(let i=-HIST;i<=horizon;i++){
+    const mi=((NOW_M+i-1+12)%12);
+    const fn=festName(mi);
+    labels.push(fn?ML[mi]+'*':ML[mi]);
+    const val=Math.round(calcVal(med.base,i,mg,w)*10)/10;
+    allValues.push(val);
+    if(i<=0){histData.push(val);forecastData.push(null);}
+    else{histData.push(null);forecastData.push(val);}
+  }
+
+  const bridgeData=new Array(labels.length).fill(null);
+  bridgeData[HIST]=allValues[HIST];
+  if(allValues[HIST+1]!==undefined) bridgeData[HIST+1]=allValues[HIST+1];
+
+  const lH=allValues[HIST];
+  const lF=allValues[allValues.length-1];
+  const pct=(lF-lH)/lH*100;
+  const trend=pct>=0?'up':'dn';
+  const peak=Math.max(...allValues.slice(HIST+1));
+  const conf=Math.round(60+tw*35);
+  const totalF=allValues.slice(HIST+1).reduce((a,b)=>a+b,0);
+  const buf=Math.round(lF*(w.supply*0.15+0.1));
+
+  _st={med,medKey,horizon,w,tw,mg,lH,lF,pct,trend,peak,conf,totalF,buf,labels,histData,forecastData,allValues,HIST};
+
+  document.getElementById('metrics-row').innerHTML=`
+    <div class="metric-card"><div class="metric-label">Current demand</div><div class="metric-value">${lH.toFixed(0)}k</div><div class="metric-delta">units / month</div></div>
+    <div class="metric-card"><div class="metric-label">End of period</div><div class="metric-value ${trend}">${lF.toFixed(0)}k</div><div class="metric-delta" style="color:${trend==='up'?'#0F6E56':'#993C1D'}">${trend==='up'?'+':''}${pct.toFixed(1)}% vs now</div></div>
+    <div class="metric-card"><div class="metric-label">Peak demand</div><div class="metric-value">${peak.toFixed(0)}k</div><div class="metric-delta">over ${horizon} months</div></div>
+    <div class="metric-card"><div class="metric-label">Model confidence</div><div class="metric-value">${conf}%</div><div class="metric-delta">data coverage</div></div>
+  `;
+
+  renderSignals(w);
+  renderContribs(w);
+  renderChart(labels,histData,forecastData,bridgeData,trend,HIST,allValues);
+  renderNotice();
+}
+
+function renderSignals(w){
+  const sigs=[
+    {name:'Historical order data',weight:1.0,impact:'Baseline rhythm',color:'#378ADD'},
+    {name:'EHR diagnosis rate (THIS/CCMS)',weight:w.ehr,impact:w.ehr>0.7?'Strong upward pressure':'Moderate growth signal',color:'#1D9E75'},
+    {name:'MySejahtera screening load',weight:w.app,impact:w.app>0.6?'2.8M+ active records':'Partial coverage',color:'#7F77DD'},
+    {name:'MyUbat refill patterns',weight:w.ubat,impact:w.ubat>0.7?'High adherence signal':'Moderate signal',color:'#3266AD'},
+    {name:'CGM glucose readings',weight:w.cgm,impact:w.cgm>0.5?'Intensity rising':'Stable readings',color:'#BA7517'},
+    {name:'Seasonal / festival calendar',weight:w.season,impact:'Real MY calendar applied',color:'#D4537E'},
+    {name:'Supply lead time (Port Klang)',weight:w.supply,impact:w.supply>0.5?'Buffer required':'Lead time OK',color:'#888780'},
+  ];
+  document.getElementById('signals').innerHTML=sigs.map(s=>`
+    <div class="signal-item">
+      <div class="signal-row"><span class="signal-name">${s.name}</span><span class="signal-note">${s.impact}</span></div>
+      <div class="signal-track"><div class="signal-fill" style="width:${Math.round(s.weight*100)}%;background:${s.color}"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderContribs(w){
+  const src=[
+    {name:'EHR new patient diagnoses',share:w.ehr*0.30,color:'#1D9E75'},
+    {name:'MyUbat refill adherence',share:w.ubat*0.25,color:'#378ADD'},
+    {name:'MySejahtera screening',share:w.app*0.20,color:'#7F77DD'},
+    {name:'CGM treatment intensity',share:w.cgm*0.15,color:'#BA7517'},
+    {name:'Seasonal / festival demand',share:w.season*0.06,color:'#D4537E'},
+    {name:'Supply lead time buffer',share:w.supply*0.04,color:'#888780'},
+  ];
+  const tot=src.reduce((a,b)=>a+b.share,0);
+  document.getElementById('contribution-bars').innerHTML=src.map(s=>{
+    const p=tot>0?Math.round(s.share/tot*100):0;
+    return `<div class="contrib-item"><div class="contrib-label"><span>${s.name}</span><span>${p}%</span></div><div class="contrib-track"><div class="contrib-fill" style="width:${p}%;background:${s.color}"></div></div></div>`;
+  }).join('');
+}
+
+function renderChart(labels,hD,fD,bD,trend,HIST,allValues){
+  const ctx=document.getElementById('forecastChart').getContext('2d');
+  if(chart)chart.destroy();
+  const fColor=trend==='up'?'#1D9E75':'#D85A30';
+  const annotPlugin={id:'fa',afterDraw(c){
+    const{ctx:x,chartArea:a,scales:sc}=c;
+    labels.forEach((l,i)=>{
+      if(!l.endsWith('*'))return;
+      const px=sc.x.getPixelForValue(i);
+      x.save();x.strokeStyle='rgba(186,117,23,0.28)';x.lineWidth=1;x.setLineDash([3,3]);
+      x.beginPath();x.moveTo(px,a.top);x.lineTo(px,a.bottom);x.stroke();x.restore();
+    });
+    const divX=sc.x.getPixelForValue(HIST);
+    x.save();x.strokeStyle='rgba(128,128,128,0.2)';x.lineWidth=1;x.setLineDash([4,4]);
+    x.beginPath();x.moveTo(divX,a.top);x.lineTo(divX,a.bottom);x.stroke();x.restore();
+  }};
+  chart=new Chart(ctx,{
+    type:'line',plugins:[annotPlugin],
+    data:{labels,datasets:[
+      {label:'Historical',data:hD,borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#378ADD',fill:false,tension:0.3,spanGaps:false},
+      {label:'Forecast',data:fD,borderColor:fColor,backgroundColor:trend==='up'?'rgba(29,158,117,0.06)':'rgba(216,90,48,0.06)',borderWidth:2,borderDash:[5,4],pointRadius:3,pointBackgroundColor:fColor,fill:false,tension:0.3,spanGaps:false},
+      {label:'_bridge',data:bD,borderColor:fColor,borderWidth:2,borderDash:[5,4],pointRadius:0,fill:false,tension:0.3,spanGaps:false},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          label:c=>{if(c.dataset.label==='_bridge')return null;return c.dataset.label+': '+c.parsed.y.toFixed(1)+'k units';},
+          afterLabel:c=>{const mi=((NOW_M+(c.dataIndex-HIST)-1+12)%12);const fn=festName(mi);return fn?'Festival: '+fn:'';}
+        }}
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10,family:'DM Mono'},color:'#9B9890',autoSkip:false,maxRotation:45}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:11,family:'DM Mono'},color:'#9B9890',callback:v=>v+'k'},min:Math.floor(Math.min(...allValues)*0.95)}
+      }
+    }
+  });
+  document.getElementById('chart-legend').innerHTML=`
+    <div class="legend-item"><span style="width:20px;height:2px;background:#378ADD;display:inline-block;border-radius:1px"></span>Historical</div>
+    <div class="legend-item"><span style="width:20px;height:0;border-top:2px dashed ${fColor};display:inline-block"></span>Forecast</div>
+    <div class="legend-item"><span style="width:2px;height:12px;background:rgba(186,117,23,0.4);display:inline-block"></span>Festival marker (*)</div>
+  `;
+}
+
+function urgency(pct,supply){
+  if(pct>15||supply>0.6)return{label:'Urgent procurement',cls:'badge-urgent',icon:'ti-alert-triangle'};
+  if(pct>5||supply>0.3) return{label:'Standard procurement',cls:'badge-standard',icon:'ti-clock'};
+  return{label:'Routine replenishment',cls:'badge-routine',icon:'ti-circle-check'};
+}
+
+function getMY(offset){
+  const ms=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const yr=+document.getElementById('yr').value;
+  const mi=((NOW_M+offset-1+12)%12);
+  const y=NOW_M+offset>12?yr+1:yr;
+  return ms[mi]+' '+y;
+}
+
+function renderNotice(){
+  const s=_st;
+  if(!s.med)return;
+  const u=urgency(s.pct,s.w.supply);
+  const ref='MOH/NIHD/PROC/'+document.getElementById('yr').value+'/'+String(Math.floor(Math.random()*9000)+1000);
+  const orderQty=Math.round((s.totalF+s.buf)*1000).toLocaleString();
+  const leadWk=s.w.supply>0.55?10:6;
+  const dir=s.trend==='up'?'increase':'decrease';
+  const absPct=Math.abs(s.pct).toFixed(1);
+
+  const activeFests=getFests().filter(f=>{
+    for(let i=1;i<=s.horizon;i++){const mi=((NOW_M+i-1+12)%12);if(f.month===mi)return true;}
+    return false;
+  });
+
+  const justifs=[];
+
+  const ehrStr=s.w.ehr>=0.7
+    ?`EHR data confidence is high (${Math.round(s.w.ehr*100)}%), recording a ${(s.med.growth_yr*100).toFixed(0)}% annual growth in new T2D patient registrations. This is the primary driver of the projected ${absPct}% ${dir} in ${s.med.label} demand.`
+    :s.w.ehr>=0.4
+    ?`EHR data at moderate confidence (${Math.round(s.w.ehr*100)}%) indicates a ${(s.med.growth_yr*100).toFixed(0)}% annual growth in T2D registrations, contributing a partial ${dir} signal.`
+    :`EHR confidence is low (${Math.round(s.w.ehr*100)}%). T2D growth rate has limited weight — verify THIS/CCMS data completeness.`;
+  justifs.push({icon:'ti-report-medical',text:ehrStr,src:'Electronic Health Records — THIS/CCMS (Salleh et al., 2021)'});
+
+  const appStr=s.w.app>=0.7?`MySejahtera (${Math.round(s.w.app*100)}%) shows 2.8M+ active screening records with elevated check-up demand`
+    :s.w.app>=0.4?`MySejahtera (${Math.round(s.w.app*100)}%) indicates moderate screening activity`
+    :`MySejahtera coverage is limited (${Math.round(s.w.app*100)}%), providing a weak signal`;
+  const cgmStr=s.w.cgm>=0.6?`, and CGM readings (${Math.round(s.w.cgm*100)}%) signal rising glucose intensity — supporting the ${dir} in demand.`
+    :s.w.cgm>=0.3?`, while CGM (${Math.round(s.w.cgm*100)}%) shows moderate glucose intensity.`
+    :`. CGM signal is minimal (${Math.round(s.w.cgm*100)}%).`;
+  justifs.push({icon:'ti-activity',text:appStr+cgmStr,src:'MySejahtera App Analytics (CodeBlue, 2026) + CGM data (Aleppo et al., 2025)'});
+
+  const ubatStr=s.w.ubat>=0.7
+    ?`MyUbat refill data (${Math.round(s.w.ubat*100)}%) confirms high patient adherence — the projected ${dir} reflects real consumption, not stockpiling.`
+    :s.w.ubat>=0.4
+    ?`MyUbat data (${Math.round(s.w.ubat*100)}%) shows moderate refill consistency — actual consumption may vary slightly.`
+    :`MyUbat adherence data is sparse (${Math.round(s.w.ubat*100)}%) — consumption estimates carry higher uncertainty.`;
+  justifs.push({icon:'ti-pill',text:ubatStr,src:'MyUbat Application — refill and prescription history'});
+
+  if(activeFests.length>0){
+    const festNames=activeFests.map(f=>f.name+' ('+f.date+')').join(', ');
+    const peakFest=[...activeFests].sort((a,b)=>b.mult-a.mult)[0];
+    const seasonStr=s.w.season>=0.6
+      ?`Seasonal weighting is high (${Math.round(s.w.season*100)}%). This ${s.horizon}-month window covers: ${festNames}. ${peakFest.name} carries a +${((peakFest.mult-1)*100).toFixed(0)}% demand multiplier — this ${s.trend==='up'?'amplifies':'partially offsets'} the baseline ${dir}.`
+      :s.w.season>=0.3
+      ?`Seasonal weighting is moderate (${Math.round(s.w.season*100)}%). Festivals in window (${festNames}) add a partial spike to the ${dir} trend.`
+      :`Seasonal weighting is low (${Math.round(s.w.season*100)}%). Festival effects (${festNames}) are largely discounted.`;
+    justifs.push({icon:'ti-calendar-event',text:seasonStr,src:'Malaysian Public Holiday Calendar + Seasonal Disease Pattern Model'});
+  }
+
+  const supStr=s.w.supply>=0.6
+    ?`Supply lead time risk is elevated (${Math.round(s.w.supply*100)}%). Port Klang congestion and Middle East API shipping delays extend lead time to ~${leadWk} weeks. A ${s.buf.toFixed(0)}k unit buffer is included — early tender issuance recommended.`
+    :s.w.supply>=0.3
+    ?`Moderate supply chain risk (${Math.round(s.w.supply*100)}%). Standard ${leadWk}-week lead time applies. A ${s.buf.toFixed(0)}k unit buffer has been incorporated.`
+    :`Supply chain risk is low (${Math.round(s.w.supply*100)}%). Estimated ${leadWk}-week lead time with a minimal ${s.buf.toFixed(0)}k unit buffer.`;
+  justifs.push({icon:'ti-ship',text:supStr,src:'Supply Lead Time Intelligence — Port Klang and API shipping data'});
+
+  const sched=[
+    {phase:'Tender issuance',date:getMY(-1),qty:'—',note:'Open tender via MOH eProcurement'},
+    {phase:'Supplier evaluation',date:getMY(0),qty:'—',note:'Min. 3 qualified suppliers'},
+    {phase:'PO release — tranche 1',date:getMY(1),qty:Math.round(s.totalF*0.5*1000).toLocaleString()+' units',note:'First 50% of forecast demand'},
+    {phase:'Delivery — tranche 1',date:getMY(2),qty:Math.round(s.totalF*0.5*1000).toLocaleString()+' units',note:'To national depots'},
+    {phase:'Delivery — tranche 2 + buffer',date:getMY(Math.ceil(s.horizon/2)+1),qty:Math.round((s.totalF*0.5+s.buf)*1000).toLocaleString()+' units',note:'Incl. '+s.buf.toFixed(0)+'k buffer stock'},
+    {phase:'EHR/CGM reforecast review',date:getMY(s.horizon),qty:'—',note:'Reforecast if diagnosis rate shifts >5%'},
+  ];
+
+  const riskFlags=[];
+  if(s.w.supply>0.5) riskFlags.push({icon:'ti-alert-triangle',col:'#854F0B',text:'High supply chain risk — advance tender issuance recommended.'});
+  if(s.pct>15) riskFlags.push({icon:'ti-trending-up',col:'#993C1D',text:'Demand surge >15% — escalate to national pharmaceutical stockpile committee.'});
+  if(s.conf<70) riskFlags.push({icon:'ti-database-off',col:'#6B6860',text:'Model confidence below 70% — improve data feed coverage before finalising order.'});
+  if(s.trend==='dn') riskFlags.push({icon:'ti-trending-down',col:'#185FA5',text:`Forecast shows ${absPct}% demand ${dir} — consider reducing order quantity vs prior cycle.`});
+  if(riskFlags.length===0) riskFlags.push({icon:'ti-circle-check',col:'#0F6E56',text:'No critical risk flags. Standard procurement process applies.'});
+
+  document.getElementById('notice-area').innerHTML=`
+    <div class="notice-box">
+      <div class="notice-header">
+        <div>
+          <div class="notice-ref">Ref: ${ref} &nbsp;·&nbsp; Issued: 8 May ${document.getElementById('yr').value}</div>
+          <div class="notice-title">Procurement Planning Notice — ${s.med.label}</div>
+          <div class="notice-sub">ATC: ${s.med.atc} &nbsp;·&nbsp; ${s.med.category} &nbsp;·&nbsp; Period: ${getMY(1)} – ${getMY(s.horizon)}</div>
+        </div>
+        <span class="notice-badge ${u.cls}"><i class="ti ${u.icon}" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i>${u.label}</span>
+      </div>
+
+      <div class="notice-section">
+        <div class="notice-section-label">Executive Summary</div>
+        <div class="notice-body">Demand for <strong>${s.med.label}</strong> is forecast to <strong>${dir} by ${absPct}%</strong> over the next <strong>${s.horizon} months</strong>, reaching <strong>${s.lF.toFixed(0)}k units/month</strong> by ${getMY(s.horizon)} (from ${s.lH.toFixed(0)}k units currently). Total recommended procurement: <strong>${orderQty} units</strong>, including ${s.buf.toFixed(0)}k buffer stock. Model confidence: <strong>${s.conf}%</strong>.</div>
+      </div>
+
+      <div class="notice-section">
+        <div class="notice-section-label">Justification</div>
+        ${justifs.map(j=>`
+          <div class="justif-row">
+            <i class="ti ${j.icon} justif-icon"></i>
+            <div><div class="justif-text">${j.text}</div><div class="justif-source">Source: ${j.src}</div></div>
+          </div>`).join('')}
+      </div>
+
+      <div class="notice-section">
+        <div class="notice-section-label">Procurement Schedule</div>
+        <table class="proc-table">
+          <thead><tr><th style="width:26%">Phase</th><th style="width:20%">Target Date</th><th style="width:22%">Quantity</th><th>Notes</th></tr></thead>
+          <tbody>${sched.map(r=>`<tr><td>${r.phase}</td><td>${r.date}</td><td>${r.qty}</td><td class="note-col">${r.note}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+
+      <div class="notice-section">
+        <div class="notice-section-label">Risk Flags</div>
+        ${riskFlags.map(r=>`<div class="risk-row"><i class="ti ${r.icon}" style="font-size:17px;color:${r.col};flex-shrink:0;margin-top:1px"></i><div class="risk-text" style="color:${r.col}">${r.text}</div></div>`).join('')}
+      </div>
+
+      <div class="notice-footer">
+        <div class="sig-block">
+          Prepared by: NIHD AI Forecasting Engine v2.0<br>
+          Authorised for: MOH Malaysia — Pharmaceutical Services Division<br>
+          Classification: Official · For procurement planning use only
+        </div>
+        <button class="btn btn-primary" onclick="window.print()"><i class="ti ti-download"></i> Save as PDF</button>
+      </div>
+    </div>
+  `;
+}
+
+compute();
+</script>
+</body>
+</html>
